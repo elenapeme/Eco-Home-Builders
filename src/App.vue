@@ -2,18 +2,21 @@
   <div id="app">
     <Header />
     <Dashboard/>
+    <Ending />
   </div>
 </template>
 
 <script>
 import Dashboard from './views/Dashboard/Dashboard.vue'
 import Header from './components/Header'
+import Ending from './components/Ending'
 
 export default {
   name: 'app',
   components: {
     Dashboard,
-    Header
+    Header,
+    Ending
   }
 }
 </script>
