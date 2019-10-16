@@ -4,7 +4,7 @@
         <b-card-group columns>
             <b-card 
             v-for="task in tasksToDo" :key="task.id" 
-            style="max-width: 40rem;"
+            
             class="mb-2">
                 <b-card-title>
                     <b-row>
