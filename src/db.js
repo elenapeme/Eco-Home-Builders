@@ -9,5 +9,5 @@ const app = initializeApp({
     messagingSenderId: "499017524183",
     appId: "1:499017524183:web:64564313a4ea3d2e5d6192"
 });
-
 export const db = app.firestore();
+export const tasksCollection = db.collection('tasks');
