@@ -45,7 +45,7 @@
                         <b-row>
                             <b-col>
                                 <font-awesome-icon icon="calendar-check" size="2x" />
-                                {{task.date}}
+                                <span class="ml-3">{{ task.date | moment("dddd, MMMM Do YYYY") }}</span>
                             </b-col>
                             <!-- <b-col>
                                 NOT IMPLEMENTED YET , TO DO
@@ -86,7 +86,7 @@
             <b-form-group
             label="Date of Work"
             >
-                <datetime type="datetime" v-model="$v.dateEdit.$model"></datetime>
+                <datetime type="date" v-model="$v.dateEdit.$model"></datetime>
                 <p v-if="errors" class="error">
                     <span v-if="!$v.dateEdit.required">The date is required</span>
                 </p>
@@ -118,13 +118,9 @@
                         </p>       
                     </b-form-group>
                 </b-form-group>  
-                
-                
-                <b-button variant="primary" type="submit" @click.prevent="updateTask(); $bvToast.show('toastEdited')">Edit task</b-button> 
             </b-col>    
             <template v-slot:modal-footer= "{ok, cancel}">
-                    <b-button variant="primary" type="submit" @click.prevent="onSubmit(); $bvToast.show('toastCreated')">Submit task</b-button> 
-                    <b-button @click="ok()">Finish adding tasks</b-button>
+                    <b-button variant="primary" type="submit" @click.prevent="updateTask(); $bvToast.show('toastEdited'); ok()">Edit task</b-button> 
             </template>        
         </b-modal>
         <b-toast v-if="this.errors === false && this.formTouched === false" id="toastEdited" title="Edition of the task">The task was edited</b-toast> 
@@ -139,6 +135,7 @@
 <script>
 import { db, tasksCollection } from '../../db.js'
 import { required, minLength } from 'vuelidate/lib/validators'
+import moment from 'moment'
 export default {
     data() {
         return {

@@ -33,7 +33,7 @@
             <b-form-group
             label="Date of Work"
             >
-                <datetime type="datetime" placeholder="click to add the date" v-model="$v.form.date.$model"></datetime>
+                <datetime type="date" placeholder="click to add the date" v-model="$v.form.date.$model"></datetime>
                 <p v-if="errors" class="error">
                     <span v-if="!$v.form.date.required">The date is required</span>
                 </p>

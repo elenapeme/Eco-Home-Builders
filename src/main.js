@@ -18,6 +18,7 @@ Vue.use(firestorePlugin)
 Vue.use(BootstrapVue)
 Vue.use(Datetime)
 Vue.use(Vuelidate)
+Vue.use(require('vue-moment'))
 
 Vue.config.productionTip = false
 
