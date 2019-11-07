@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase';
- 
-const app = initializeApp({
+import 'firebase/storage';
+
+export const app = initializeApp({
     apiKey: "AIzaSyCQ7KHvtfsKCmt0GS84Q2XdHREltlUdiWg",
     authDomain: "eco-home-builders.firebaseapp.com",
     databaseURL: "https://eco-home-builders.firebaseio.com",

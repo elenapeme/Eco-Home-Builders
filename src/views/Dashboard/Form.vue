@@ -43,7 +43,7 @@
             >
                 <b-form-select v-model="$v.selectedBuilding.$model">
                     <option value="">Select a building</option>
-                    <option v-for="(building_obj, building) in buildings" :value="building">{{building}}</option>
+                    <option v-for="(building_obj, building) in buildings" :value="building" v-bind:key="building">{{building}}</option>
                 </b-form-select>
                 <p v-if="errors" class="error">
                     <span v-if="!$v.selectedBuilding.required">Choosing a building is required</span>
@@ -54,7 +54,7 @@
             >
                 <b-form-select :disabled="apartment.length == 0" v-model="$v.selectedApartment.$model">
                     <option value="">Select an apartment</option>
-                    <option v-for="(room_obj, apartment) in apartment">{{apartment}}</option>
+                    <option v-for="(room_obj, apartment) in apartment" v-bind:key="apartment">{{apartment}}</option>
                 </b-form-select>
                 <p v-if="errors" class="error">
                     <span v-if="!$v.selectedRoom.required">Choosing an apartment is required</span>
@@ -64,7 +64,7 @@
             label="Room name:">
                 <b-form-select :disabled="rooms.length == 0" v-model="$v.selectedRoom.$model">
                     <option value="">Select a room</option>
-                    <option v-for="room in rooms">{{room}}</option>
+                    <option v-for="room in rooms" v-bind:key="room">{{room}}</option>
                 </b-form-select>
                 <p v-if="errors" class="error">
                     <span v-if="!$v.selectedRoom.required">Choosing a room is required</span>
@@ -98,14 +98,13 @@
                     </b-form-group>
                 </b-form-group>  
                 <b-form-group>
-                    <!-- TODO -->
-                <!-- <b-form-file
-                v-model="form.files"
-                :state="Boolean(file)"
-                multiple
-                placeholder="Choose or drop the files here..."
-                drop-placeholder="Drop file here..."
-                ></b-form-file> -->
+                    
+                <b-form-file
+                v-model="form.images"
+                placeholder="Choose or drop the image here"
+                drop-placeholder="Drop the image here..."
+                @change="uploadImage"
+                ></b-form-file>
                 </b-form-group>
                 
                 
@@ -122,7 +121,7 @@
 
 <script>
 import { required, minLength } from 'vuelidate/lib/validators'
-import { db, tasksCollection } from '../../db.js'
+import { db, tasksCollection, app } from '../../db.js'
 export default {
     data: function() {
         return {
@@ -170,9 +169,10 @@ export default {
                 nameResponsible:"",
                 emailResponsible:"",
                 phoneResponsible: "",
-                files: []
+                image: ""
 
             },
+            formTouched: "",
             uiState: "submit not clicked",
             errors: false,
             empty: true,
@@ -200,6 +200,7 @@ export default {
                     building: this.form.buildingName,
                     apartment: this.form.apartmentName,
                     room: this.form.roomName,
+                    image: this.form.image,
                     nameResponsible: this.form.nameResponsible,
                     emailResponsible: this.form.emailResponsible,
                     phoneResponsible: this.form.phoneResponsible,
@@ -209,6 +210,8 @@ export default {
                 .then(function(docRef) {
                     console.log("Document written with ID: ", docRef.id);
                 })
+                .then( key =>{
+                }) 
                 .catch(function(error) {
                     console.error("Error adding document: ", error);
                 })
@@ -224,12 +227,28 @@ export default {
                 this.form.nameResponsible = ""
                 this.form.emailResponsible = ""
                 this.form.phoneResponsible = ""
-
-            }
-           
-            
+            }          
         },
-
+        uploadImage(e){
+            console.log(e.target.files[0])
+            if(e.target.files[0]){    
+                let file = e.target.files[0];
+                var storageRef = app.storage().ref('images/'+ Math.random() + '_'  + file.name);
+            
+                let uploadTask  = storageRef.put(file);
+            
+                uploadTask.on('state_changed', (snapshot) => {
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    }, (error) => {
+                    }, () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        this.form.image = downloadURL;
+                        console.log("File at", downloadURL)
+                    });
+                });
+            }
+        },
 
     },
     watch: { //list of buildings, apartments, rooms

@@ -17,11 +17,14 @@
                                 <font-awesome-icon icon="edit"/>
                             </b-button>
                             <b-button>
-                                <font-awesome-icon icon="times" @click="deleteTask(task); $bvToast.show('toastDeleted')"/>
+                                <font-awesome-icon icon="times" @click="deleteTask(task); deleteImage(img); $bvToast.show('toastDeleted')"/>
                             </b-button> 
 
                             
                         </b-col>
+                    </b-row>
+                    <b-row>
+                            <b-img :src="task.image" class="mt-4" alt="" height="150" center></b-img>
                     </b-row>  
                 </b-card-title>
                 <b-row>
@@ -47,14 +50,13 @@
                                 <font-awesome-icon icon="calendar-check" size="2x" />
                                 <span class="ml-3">{{ task.date | moment("dddd, MMMM Do YYYY") }}</span>
                             </b-col>
-                            <!-- <b-col>
-                                NOT IMPLEMENTED YET , TO DO
+                            <b-col>
                                <b-button variant="info">
                                     <font-awesome-icon icon="folder-open"  />
                                     Files
                                 </b-button>
                                 
-                            </b-col> -->
+                            </b-col>
                         </b-row>
                         
                     </small>                    
@@ -64,7 +66,8 @@
         <b-toast id="toastDeleted" title="Deletion of the task">The task was deleted</b-toast>  
         <b-modal id="modal-edit" title="Edit the task">
             <b-form-group inline>
-            <h4>Task Information</h4>
+                <h4>Task Information</h4>
+            </b-form-group>
             <b-form-group
             label="Task:">
                 <b-form-input
@@ -78,10 +81,13 @@
             <b-form-group>
                 <b-form-checkbox
                 id="checkbox-1"
-                v-model="finishedEdit"
+                v-model="$v.finishedEdit.$model"
                 >
                 Finished task
                 </b-form-checkbox>
+                <p v-if="errors" class="error">
+                    <span v-if="!$v.finishedEdit.required">This field is required</span>
+                </p>
             </b-form-group>
             <b-form-group
             label="Date of Work"
@@ -133,7 +139,7 @@
 </template>
 
 <script>
-import { db, tasksCollection } from '../../db.js'
+import { db, tasksCollection, app } from '../../db.js'
 import { required, minLength } from 'vuelidate/lib/validators'
 import moment from 'moment'
 export default {
@@ -183,6 +189,7 @@ export default {
             uiState: "submit not clicked",
             errors: false,
             empty: true,
+            formTouched: "",
 
         }
     },
@@ -197,9 +204,12 @@ export default {
             required
         },
         phoneEdit: {
-
+            required
         },
         emailEdit: {
+            required
+        },
+        finishedEdit: {
             required
         }
     },
@@ -211,6 +221,16 @@ export default {
     methods: {
         deleteTask(task) {
             tasksCollection.doc(task.id).delete();
+
+        },
+        deleteImage(img){
+            let image = app.storage().refFromURL(img);
+            image.delete().then(function() {
+                console.log('image deleted');
+            }).catch(function(error) {
+                // Uh-oh, an error occurred!
+                console.log('an error occurred');
+            });
         },
         editTask(task) {
             this.currentlyEditing = task.id;
