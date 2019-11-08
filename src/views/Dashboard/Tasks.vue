@@ -51,10 +51,10 @@
                                 <span class="ml-3">{{ task.date | moment("dddd, MMMM Do YYYY") }}</span>
                             </b-col>
                             <b-col>
-                               <b-button variant="info">
+                               <!-- <b-button variant="info">
                                     <font-awesome-icon icon="folder-open"  />
                                     Files
-                                </b-button>
+                                </b-button> -->
                                 
                             </b-col>
                         </b-row>
@@ -97,7 +97,6 @@
                     <span v-if="!$v.dateEdit.required">The date is required</span>
                 </p>
             </b-form-group>
-                </b-form-group>
                 <b-col>
                 <b-form-group>
                     <h4>Responsable Information</h4>
@@ -220,7 +219,11 @@ export default {
     },
     methods: {
         deleteTask(task) {
-            tasksCollection.doc(task.id).delete();
+            tasksCollection.doc(task.id).delete().then(function() {
+            console.log("Document successfully deleted!");
+            }).catch(function(error) {
+            console.error("Error removing document: ", error);
+            });
 
         },
         deleteImage(img){
